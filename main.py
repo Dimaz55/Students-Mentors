@@ -18,7 +18,10 @@ def hw_average_grade(student_list: list, course: str):
         if course in student.courses_in_progress:
             qty += 1
             result += average_grade(student.grades)
-    return round(result/qty, 1)
+    if qty > 0:
+        return round(result/qty, 1)
+    else:
+        return 0
 
 
 def lecturers_average_grade(lecturer_list: list, course: str):
@@ -28,7 +31,10 @@ def lecturers_average_grade(lecturer_list: list, course: str):
         if course in lecturer.courses_attached:
             qty += 1
             result += average_grade(lecturer.grades)
-    return round(result/qty, 1)
+    if qty > 0:
+        return round(result / qty, 1)
+    else:
+        return 0
 
 
 class Student:
