@@ -1,5 +1,5 @@
 def average_grade(grades: dict):
-    """Подсчёт средней оценки по всем курсам"""
+    """Подсчёт средней оценки по всем курсам конкретного человека"""
     if grades:
         average_course_grade = []
         for grade_list in grades.values():
@@ -11,50 +11,42 @@ def average_grade(grades: dict):
         return 0
 
 
-def hw_average_grade(student_list: list, course: str):
+def total_average_grade(person_list: list, course: str):
+    """Подсчёт средней оценки по всем курсам у списка людей"""
     result = 0
-    qty = 0  # Кол-во студентов с нужным курсом (если ошибка в списке)
-    for student in student_list:
-        if course in student.courses_in_progress:
+    qty = 0  # Кол-во людей с нужным курсом
+    for person in person_list:
+        if course in person.courses:
             qty += 1
-            result += average_grade(student.grades)
+            result += average_grade(person.grades)
     if qty > 0:
         return round(result/qty, 1)
     else:
         return 0
 
 
-def lecturers_average_grade(lecturer_list: list, course: str):
-    result = 0
-    qty = 0  # Кол-во лекторов с нужным курсом (если ошибка в списке)
-    for lecturer in lecturer_list:
-        if course in lecturer.courses_attached:
-            qty += 1
-            result += average_grade(lecturer.grades)
-    if qty > 0:
-        return round(result / qty, 1)
-    else:
-        return 0
-
-
-class Student:
-    def __init__(self, name, surname):
+class Person:
+    def __init__(self, name: str, surname: str):
         self.name = name
         self.surname = surname
-        self.finished_courses = []
-        self.courses_in_progress = []
+        self.courses = []
         self.grades = {}
 
+
+class Student(Person):
+    def __init__(self, name, surname):
+        super().__init__(name, surname)
+        self.finished_courses = []
+
     def __str__(self):
-        courses_in_progress = (', '.join(self.courses_in_progress)
-                               or 'отсутствуют')
-        finished_courses = ', '.join(self.finished_courses) or 'отсутствуют'
+        courses_in_progress = (', '.join(self.courses) or 'отсутствуют')
+        courses_finished = ', '.join(self.finished_courses) or 'отсутствуют'
         info_card = f'Имя: {self.name}\n' \
                     f'Фамилия: {self.surname}\n' \
                     f'Средняя оценка за домашние задания: ' \
                     f'{average_grade(self.grades)}\n' \
                     f'Курсы в процессе изучения: {courses_in_progress}\n' \
-                    f'Завершенные курсы: {finished_courses}\n'
+                    f'Завершенные курсы: {courses_finished}\n'
         return info_card
 
     def rate_lecturer(self, lecturer, course, grade):
@@ -63,10 +55,10 @@ class Student:
         """
         if not isinstance(lecturer, Lecturer):
             print("!!! Ошибка: студентам можно оценивать только лекторов.\n")
-        elif course not in lecturer.courses_attached:
+        elif course not in lecturer.courses:
             print(f"!!! Ошибка: преподаватель {lecturer.name} "
                   f"{lecturer.surname} не ведёт курс у данного студента.\n")
-        elif course not in self.courses_in_progress:
+        elif course not in self.courses:
             print(f"!!! Ошибка: Данный студент не проходит курс {course}.\n")
         elif type(grade) is str and 10 < grade < 0:
             print(f'!!! Ошибка: оценка должна быть в диапазоне (1-10).\n')
@@ -91,11 +83,10 @@ class Student:
             print('!!! Ошибка: сравнивать возможно только студентов.')
 
 
-class Mentor:
-    def __init__(self, name, surname):
-        self.name = name
-        self.surname = surname
-        self.courses_attached = []
+class Mentor(Person):
+    # оставлен для совместимости
+    url_of_teaching = "https:\\netology.ru"
+    pass
 
 
 class Lecturer(Mentor):
@@ -126,6 +117,7 @@ class Lecturer(Mentor):
 
 
 class Reviewer(Mentor):
+    """Проверяющий может ставить оценки студентам за домашние задания """
     def __init__(self, name, surname):
         super().__init__(name, surname)
 
@@ -142,10 +134,10 @@ class Reviewer(Mentor):
         if not isinstance(student, Student):
             print("!!! Ошибка: ставить оценки за домашнее задание можно "
                   "только студентам.\n")
-        elif course not in self.courses_attached:
+        elif course not in self.courses:
             print(f"!!! Ошибка: преподаватель {self.name} {self.surname} "
                   f"не ведёт курс {course}.\n")
-        elif course not in student.courses_in_progress:
+        elif course not in student.courses:
             print(f"!!! Ошибка: студент {student.name} {student.surname} "
                   f"не обучается на курсе {course}.\n")
         elif grade <= 0 or grade > 10:
@@ -159,29 +151,29 @@ class Reviewer(Mentor):
 
 if __name__ == '__main__':
     student_0 = Student('Иван', 'Петров')
-    student_0.courses_in_progress += ['Python']
+    student_0.courses += ['Python']
     student_0.finished_courses += ['HTML']
 
     student_1 = Student('Елена', 'Головач')
-    student_1.courses_in_progress += ['GIT']
+    student_1.courses += ['GIT']
 
     student_2 = Student('Василий', 'Алибабаев')
-    student_2.courses_in_progress += ['Python']
+    student_2.courses += ['Python']
 
     reviewer_0 = Reviewer('Козьма', 'Прутков')
-    reviewer_0.courses_attached += ['Python']
+    reviewer_0.courses += ['Python']
 
     reviewer_1 = Reviewer('Фёдор', 'Шаляпин')
-    reviewer_1.courses_attached += ['GIT']
+    reviewer_1.courses += ['GIT']
 
     lecturer_0 = Lecturer('Григорий', 'Распутин')
-    lecturer_0.courses_attached += ['Python']
+    lecturer_0.courses += ['Python']
 
     lecturer_1 = Lecturer('Степан', 'Разин')
-    lecturer_1.courses_attached += ['GIT']
+    lecturer_1.courses += ['GIT']
 
     lecturer_2 = Lecturer('Дмитрий', 'Донской')
-    lecturer_2.courses_attached += ['Python']
+    lecturer_2.courses += ['Python']
 
     # Проверка обработки ошибок
     reviewer_0.rate_hw(student_0, 'Python', 11)  # оценка не в диапазоне 1:10
@@ -189,7 +181,7 @@ if __name__ == '__main__':
     reviewer_1.rate_hw(reviewer_0, 'GIT', 10)  # попытка оценить проверяющего
     student_0.rate_lecturer(reviewer_0, 'Python', 5)  # оценка проверяющего
 
-    # Удачное добавление оценок
+    # Добавление оценок
     reviewer_0.rate_hw(student_0, 'Python', 10)
     reviewer_0.rate_hw(student_0, 'Python', 8)
     reviewer_0.rate_hw(student_0, 'Python', 3)
@@ -214,6 +206,7 @@ if __name__ == '__main__':
     student_0.rate_lecturer(lecturer_2, 'Python', 7)
     student_0.rate_lecturer(lecturer_2, 'Python', 10)
 
+    # Вывод базовой информации об объектах
     print(student_0)
     print(student_1)
 
@@ -226,18 +219,20 @@ if __name__ == '__main__':
     print(student_0 > student_1)
     print(lecturer_0 > lecturer_1)
 
+    # Создание группы студентов
     # student_0, 'Python', [10, 8, 3]
     # student_1, 'GIT', [5, 8, 9]
     # student_2, 'Python', [9, 8, 6]
     st_py_group = [student_0, student_2]
 
     print('Средняя оценка студентов по курсу Python:',
-          hw_average_grade(st_py_group, 'Python'))
+          total_average_grade(st_py_group, 'Python'))
 
+    # Создание группы лекторов
     # lecturer_0, 'Python', [8, 10, 10]
     # lecturer_1, 'GIT', [8, 2, 10]
     # lecturer_2, 'Python', [10, 7, 10]
     lec_py_group = [lecturer_0, lecturer_2]
 
     print('Средняя оценка лекторов по курсу Python:',
-          lecturers_average_grade(lec_py_group, 'Python'))
+          total_average_grade(lec_py_group, 'Python'))
