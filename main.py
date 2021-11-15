@@ -226,10 +226,18 @@ if __name__ == '__main__':
     print(student_0 > student_1)
     print(lecturer_0 > lecturer_1)
 
+    # student_0, 'Python', [10, 8, 3]
+    # student_1, 'GIT', [5, 8, 9]
+    # student_2, 'Python', [9, 8, 6]
     st_py_group = [student_0, student_2]
+
     print('Средняя оценка студентов по курсу Python:',
           hw_average_grade(st_py_group, 'Python'))
 
+    # lecturer_0, 'Python', [8, 10, 10]
+    # lecturer_1, 'GIT', [8, 2, 10]
+    # lecturer_2, 'Python', [10, 7, 10]
     lec_py_group = [lecturer_0, lecturer_2]
+
     print('Средняя оценка лекторов по курсу Python:',
           lecturers_average_grade(lec_py_group, 'Python'))
