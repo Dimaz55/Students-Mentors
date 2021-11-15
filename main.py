@@ -3,9 +3,12 @@ def average_grade(grades: dict):
     if grades:
         average_course_grade = []
         for grade_list in grades.values():
-            average_course_grade.append(
-                round(sum(grade_list) / len(grade_list), 1)
-            )
+            if grade_list:
+                average_course_grade.append(
+                    round(sum(grade_list) / len(grade_list), 1)
+                                           )
+            else:
+                average_course_grade.append(0)
         return sum(average_course_grade) / len(grades)
     else:
         return 0
@@ -13,12 +16,15 @@ def average_grade(grades: dict):
 
 def hw_average_grade(student_list: list, course: str):
     result = 0
-    qty = 0  # Кол-во студентов с нужным курсом (если ошибка в списке)
+    qty = 0  # Кол-во студентов с нужным курсом (если список с ошибкой)
     for student in student_list:
         if course in student.courses_in_progress:
             qty += 1
             result += average_grade(student.grades)
-    return round(result/qty, 1)
+    if qty > 0:  # избегаем деление на ноль
+        return round(result/qty, 1)
+    else:
+        return 0
 
 
 def lecturers_average_grade(lecturer_list: list, course: str):
@@ -28,7 +34,10 @@ def lecturers_average_grade(lecturer_list: list, course: str):
         if course in lecturer.courses_attached:
             qty += 1
             result += average_grade(lecturer.grades)
-    return round(result/qty, 1)
+    if qty > 0:  # избегаем деление на ноль
+        return round(result / qty, 1)
+    else:
+        return 0
 
 
 class Student:
