@@ -158,7 +158,7 @@ class Reviewer(Mentor):
 
 
 if __name__ == '__main__':
-    student_0 = Student('Иван', 'Петров', )
+    student_0 = Student('Иван', 'Петров')
     student_0.courses_in_progress += ['Python']
     student_0.finished_courses += ['HTML']
 
